@@ -13,9 +13,19 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
+    "start": "nodemon index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Joshua-Serna/express_workshop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Joshua-Serna/express_workshop/issues"
+  },
+  "homepage": "https://github.com/Joshua-Serna/express_workshop#readme",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "nodemon": "^3.1.14"
   }
 }
