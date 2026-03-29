@@ -3,72 +3,67 @@ const pokemon = express.Router();
 const db = require('../config/database');
 
 
-pokemon.post("/", (req, res, next) => {
-    return res.status(200).send(req.body);
+pokemon.post("/", async(req, res, next) => {
+    const { pok_name, pok_height, pok_weight, pok_base_experience } = req.body;
+
+    if(pok_name && pok_height && pok_weight && pok_base_experience){
+        let query = "INSERT INTO pokemon (pok_name, pok_height, pok_weight, pok_base_experience)";
+        query += `VALUES('${pok_name}', ${pok_height}, ${pok_weight}, ${pok_base_experience})`;
+
+        const rows = await db.query(query);
+
+        if(rows.affectedRows == 1) {
+            return res.status(201).json({code: 201, message: "Pokemon insertado correctamente"});
+        }
+
+        return res.status(500).json({code: 500, message: "Ocurrio un error"});
+    }
+    return res.status(500).json({code: 500, message: "Campos incompletos"});
 });
 
 pokemon.get('/', async(req, res, next) => {
     const [pkmn] = await db.query("SELECT * FROM pokemon");
-    return res.status(200).json(pkmn);
+    return res.status(200).json({code: 1, message: pkmn});
 });
 
-/*
-app.get('/pokemon/:name', (req, res, next) => {
-
-    // condicion ? valor si verdadero : valor si falso
-
-    const name = req.params.name;
-
-    const pk = pokemon.filter((p) => {
-        return (p.name.toUpperCase() == name.toUpperCase()) ? p : null;
-    });
-
-    return (pk.length > 0) ? 
-        res.status(200).send(pk) : 
-        res.status(404).send("Pokemon no encontrado");
-});
-
-app.get('/pokemon/:id', (req, res, next) => {
-
-    const id = req.params.id - 1;
-
-    if (id >= 0 && id <= 150) {
-        return res.status(200).send(pokemon[req.params.id - 1]);
-    } else {
-        return res.status(404).send("Pokemon no encontrado");
-    }
-
-});
-*/
 
 pokemon.get('/:param', async (req, res) => {
-    try {
-        const param = req.params.param;
-        let pkmn = [];
+    const param = req.params.param;
 
-        // Si es número → buscar por ID
+    try {
+        //  Si es número → buscar por ID
         if (!isNaN(param)) {
-            pkmn = await db.query(
-                "SELECT * FROM pokemon WHERE id = ?", 
-                [parseInt(param)]
+            const id = parseInt(param);
+
+            const [pkmn] = await db.query(
+                "SELECT * FROM pokemon WHERE pok_id = ?",
+                [id]
             );
-        } 
-        // Si es texto → buscar por nombre
-        else {
-            pkmn = await db.query(
-                "SELECT * FROM pokemon WHERE UPPER(name) = UPPER(?)", 
-                [param]
-            );
+
+            if (pkmn.length === 0) {
+                return res.status(404).json({ code: 404, message: "Pokémon no encontrado" });
+            }
+
+            return res.status(200).json({code:200, message: pkmn});
         }
 
-        return (pkmn.length > 0)
-            ? res.status(200).json(pkmn)
-            : res.status(404).send("Pokemon no encontrado");
+        //  Si es texto → buscar por nombre
+        const [pkmn] = await db.query(
+            "SELECT * FROM pokemon WHERE LOWER(pok_name) = LOWER(?)",
+            [param]
+        );
+
+        if (pkmn.length === 0) {
+            return res.status(404).json({ code: 404, message: "Pokémon no encontrado" });
+        }
+
+        return res.status(200).json({code: 200, message: pkmn});
 
     } catch (error) {
-        console.error(error);
-        return res.status(500).send(error.message);
+        return res.status(500).json({ message: error.message });
     }
 });
+
+
 
 module.exports = pokemon;
