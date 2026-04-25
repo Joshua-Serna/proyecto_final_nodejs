@@ -70,7 +70,7 @@ pokemon.patch("/:id", async (req, res, next) =>{
 });
 
 pokemon.get('/', async(req, res, next) => {
-    const [pkmn] = await db.query("SELECT * FROM pokemon");
+    const pkmn = await db.query("SELECT * FROM pokemon");
     return res.status(200).json({code: 1, message: pkmn});
 });
 
@@ -83,7 +83,7 @@ pokemon.get('/:param', async (req, res) => {
         if (!isNaN(param)) {
             const id = parseInt(param);
 
-            const [pkmn] = await db.query(
+            const pkmn = await db.query(
                 "SELECT * FROM pokemon WHERE pok_id = ?",
                 [id]
             );
@@ -96,7 +96,7 @@ pokemon.get('/:param', async (req, res) => {
         }
 
         //  Si es texto → buscar por nombre
-        const [pkmn] = await db.query(
+        const pkmn = await db.query(
             "SELECT * FROM pokemon WHERE LOWER(pok_name) = LOWER(?)",
             [param]
         );
