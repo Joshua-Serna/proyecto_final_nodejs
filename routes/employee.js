@@ -51,27 +51,12 @@ employee.put("/:id", async (req, res, next) =>{
     return res.status(500).json({code: 500, message: "Campos incompletos"});
 
 });
-/*
-pokemon.patch("/:id", async (req, res, next) =>{
-    
-    if (req.body.pok_name) {
-        let query = `UPDATE pokemon SET pok_name = '${req.body.pok_name}' WHERE pok_id=${req.params.id}`;
 
-        const rows = await db.query(query);
-
-        if (rows.affectedRows == 1) {
-            return res.status(200).json({code: 200, message: "Pokemon actualizado correctamente"});
-        }
-
-    return res.status(500).json({ code: 500, message: "ocurrio un error"});
-    }
-    return res.status(500).json({ code: 500, message: "Campos incompletos"});
-
-});
-*/
 employee.get('/', async(req, res, next) => {
+
     const rows = await db.query("SELECT * FROM employees");
     return res.status(200).json({code: 1, message: rows});
+
 });
 
 employee.get("/:param", async (req, res) => {
@@ -103,45 +88,6 @@ employee.get("/:param", async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
-
-/*
-pokemon.get('/:param', async (req, res) => {
-    const param = req.params.param;
-
-    try {
-        //  Si es número → buscar por ID
-        if (!isNaN(param)) {
-            const id = parseInt(param);
-
-            const pkmn = await db.query(
-                "SELECT * FROM pokemon WHERE pok_id = ?",
-                [id]
-            );
-
-            if (pkmn.length === 0) {
-                return res.status(404).json({ code: 404, message: "Pokémon no encontrado" });
-            }
-
-            return res.status(200).json({code:200, message: pkmn});
-        }
-
-        //  Si es texto → buscar por nombre
-        const pkmn = await db.query(
-            "SELECT * FROM pokemon WHERE LOWER(pok_name) = LOWER(?)",
-            [param]
-        );
-
-        if (pkmn.length === 0) {
-            return res.status(404).json({ code: 404, message: "Pokémon no encontrado" });
-        }
-
-        return res.status(200).json({code: 200, message: pkmn});
-
-    } catch (error) {
-        return res.status(500).json({ message: error.message });
-    }
-});
-*/
 
 
 module.exports = employee;
