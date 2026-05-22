@@ -139,4 +139,4 @@ DELETE /employees/:id
 
 ## Autor
 
-Joshua Serna
+Joshua Ismael Serna Ventura
